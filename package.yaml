@@ -27,6 +27,8 @@ library:
   dependencies:
   - liquidhaskell
   - time
+  - transformers
+  - template-haskell
 
 executables:
   liquidHaskell-tut-exe:

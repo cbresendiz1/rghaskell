@@ -58,11 +58,11 @@ prop_nil N   =  axiom_append_nil N
 
 prop_nil (C x xs) = toProof e1 $ eqProof e1 (eqProof e2 e3 pr2) pr1
    where
-   	e1  = append (C x xs) N
-   	pr1 = prop_nil xs
-   	e2  = C x (append xs N)
-   	pr2 = prop_nil xs
-   	e3  = C x xs
+        e1  = append (C x xs) N
+        pr1 = prop_nil xs
+        e2  = C x (append xs N)
+        pr2 = prop_nil xs
+        e3  = C x xs
 
 
 -- | Proof 2: append is associative

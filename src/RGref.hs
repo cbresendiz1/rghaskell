@@ -25,7 +25,27 @@ forgetIOTriple a = a
 {-@ measure getsnd :: (a, b) -> b
     getsnd (x, y) = y
   @-}
-  
+
+-- Example
+
+chain :: (b -> c -> Bool) -> (a -> b -> Bool)
+      -> (a -> c -> Bool) ->  a -> b -> c -> Bool
+chain p q r = \ x y z -> q x y ==> p y z ==> r x z
+
+-- {-@ bound chain @-}
+-- {-@
+-- compose :: forall <p :: b -> c -> Bool,
+--                    q :: a -> b -> Bool,
+--                    r :: a -> c -> Bool>.
+--            (Chain b c a p q r)
+--         => (y:b -> c<p y>)
+--         -> (z:a -> b<q z>)
+--         ->  x:a -> c<r x>
+-- @-}
+-- compose f g x = undefined
+
+-- End Example
+
 {-@ newRGRef :: forall < p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool >.
                        { x :: a<p> |- a<r x> <: a<p> }
                        { x :: a<p> |- a<g x> <: a<r x> }
@@ -37,6 +57,7 @@ newRGRef e = do r <- newIORef e
                 return (Wrap r)
 
 {-@ measure pastValue :: RGRef a -> a -> Bool @-}
+{-@ measure pastValueb :: RGRef a -> b -> Bool @-}
 {-@ measure terminalValue :: RGRef a -> a @-}
 {-@ measure shareValue :: RGRef a -> a @-}
 
@@ -73,15 +94,23 @@ injectStable ref v = liquidAssume undefined ref
 injectStable2 :: (a -> a -> a) -> RGRef a -> a -> RGRef a
 injectStable2 pf ref v = liquidAssume undefined ref
 
--- {-@ assume downcast :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>.
+{-@ measure translate :: RGRef a -> RGRef b @-}
+
+-- {-@ assume downcast :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>. 
 --                 { x::b |- b <: a }
 --                 { x::b |- b<r x> <: b<p> }
 --                 ref:RGRef<p,r,g> a ->
---                 {v:b | pastValue ref v } ->
---                 {r : RGRef<p,r,g> b | ref = r } @-}
--- downcast :: RGRef a -> b -> RGRef b
--- downcast r v = (unsafeCoerce r)
-
+--                 { v:b | pastValue ref v } ->
+--                 { r : RGRef<p,r,g> b | ref == r } @-}
+{-@ assume downcast :: forall <p :: b -> Bool, r :: b -> b -> Bool, g :: b -> b -> Bool>. 
+                   { x :: b |- b <: a }
+                   { x :: b |- b<r x> <: b<p> }
+                   ref : RGRef a -> 
+                   { v : b | pastValueb ref v } -> 
+                   { r : RGRef<p,r,g> b | (translate ref) == r } 
+  @-}
+downcast :: RGRef a -> b -> RGRef b
+downcast r v = (unsafeCoerce r)
 
 {-@ assume typecheck_pastval :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>.
                                 x:RGRef<p,r,g> a ->
@@ -170,9 +199,15 @@ rgCASpublish e (Wrap ptr) old new =
            coerce r e = undefined
 
 -- {-@ assume safe_covar :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>.
---                 { x::a |- a <: b }
---                 { x::a<p> |- a<g x> <: b }
---                 ref:RGRef<p,r,g> a ->
---                 {r : RGRef<p,r,g> b | ref = r } @-}
--- safe_covar :: RGRef a -> RGRef b
--- safe_covar r = unsafeCoerce r
+--                  { x::a |- a <: b }
+--                  { x::a<p> |- a<g x> <: b }
+--                  ref:RGRef<p,r,g> a ->
+--                  {r : RGRef<p,r,g> b | ref == r } @-}
+-- ref:RGRef<p,r,g> a ->
+{-@ assume safe_covar :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>.
+                 { x::a |- a <: b }
+                 { x::a<p> |- a<g x> <: b }
+                 ref:RGRef<p,r,g> a ->
+                 {r : RGRef b | (translate ref) == r } @-}
+safe_covar :: RGRef a -> RGRef b
+safe_covar r = unsafeCoerce r
