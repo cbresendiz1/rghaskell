@@ -28,7 +28,7 @@ import Language.Haskell.Liquid.Prelude
 #define UNPACK(p) p
 #endif
 
-{-data List a = Node { val :: a
+{- data List a = Node { val :: a
                    , next :: UNPACK(IORef (List a)) }
             | DelNode { next :: UNPACK(IORef (List a)) }
             | Null
@@ -36,7 +36,8 @@ import Language.Haskell.Liquid.Prelude
 
 data ListHandle a = ListHandle { headList :: UNPACK(IORef (IORef (List a))), 
                                  tailList :: UNPACK(IORef (IORef (List a))) }
-                                 -}
+-}
+                    
 -- Rely/Guarantee for next-pointers:
 -- Permitted operations are:
 -- 1. [Append] Replacing Null with a Node
@@ -50,7 +51,7 @@ data ListHandle a = ListHandle { headList :: UNPACK(IORef (IORef (List a))),
 -- node type and next pointer /stable/.  So with a way to observe the additional stable refinement
 -- that a cell has become deleted, I could actually enforce the correct management of next pointers
 -- on deletion.
-{-@ measure terminalValue :: RGRef a -> a @-}
+-- {-@ measure terminalValue :: RGRef a -> a @-}
 {-@ predicate ListRG X Y =
     (((isNull X) && (isNode Y)) ||
      ((isNode X) && (isDel Y) && ((nxt X) = (nxt Y))) ||
@@ -66,9 +67,9 @@ data ListHandle a = ListHandle { headList :: UNPACK(IORef (IORef (List a))),
 --     c) DelNode n' ->
 --     d) [disconnected]
 
-{-@ any_stable_listrg :: x:List a -> y:{v:List a | (ListRG x v)} -> {v:List a | (v = y)} @-}
-any_stable_listrg :: List a -> List a -> List a
-any_stable_listrg x y = y
+-- {-@ any_stable_listrg :: x:List a -> y:{v:List a | (ListRG x v)} -> {v:List a | (v = y)} @-}
+-- any_stable_listrg :: List a -> List a -> List a
+-- any_stable_listrg x y = y
 
 {-@ listrg_refl :: x:List a -> y:{v:List a | (ListRG x v)} -> {v:List a | ((ListRG x y) && (y = v))} @-}
 listrg_refl :: List a -> List a -> List a
@@ -87,32 +88,33 @@ data List a = Node a (UNPACK(RGRef (List a)))
             | Null
             | Head (UNPACK(RGRef (List a))) deriving Eq
 
--- {-@ data ListHandle a = ListHandle (lh_head :: IORef (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)))
---                                  (lh_tail :: IORef (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a))) @-}
--- data ListHandle a = ListHandle (UNPACK(IORef (RGRef (List a))))
---                              (UNPACK(IORef (RGRef (List a))))
--- 
--- {-# INLINE myNext #-}
--- {-@ myNext :: l:List a -> 
---               {r:RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a) |
---                    ((nxt l) = r) }
--- @-}
--- myNext :: List a -> RGRef (List a)
--- myNext (Node v n) = n
--- myNext (DelNode n) = n
--- myNext (Head n) = n
--- myNext _ = error "myNext"
--- 
--- {-@ type InteriorPtr a = RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a) @-}
--- 
--- -- LH seems fine with incomplete pattern matches here,
--- -- which is great.  It means fewer refinements are added
--- -- to each constructor, making a lot less work for inference and SMT.
+{-@ data ListHandle a = ListHandle (lh_head :: IORef (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)))
+                                 (lh_tail :: IORef (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a))) @-}
+data ListHandle a = ListHandle (UNPACK(IORef (RGRef (List a))))
+                             (UNPACK(IORef (RGRef (List a))))
+
+{-# INLINE myNext #-}
+{-@ myNext :: l:List a -> 
+              {r:RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a) |
+                   ((nxt l) = r) }
+@-}
+myNext :: List a -> RGRef (List a)
+myNext (Node v n) = n
+myNext (DelNode n) = n
+myNext (Head n) = n
+myNext _ = undefined -- error "myNext"
+
+{-@ type InteriorPtr a = RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a) @-}
+
+-- LH seems fine with incomplete pattern matches here,
+-- which is great.  It means fewer refinements are added
+-- to each constructor, making a lot less work for inference and SMT.
 {-@ measure nxt :: List a -> (RGRef (List a))
     nxt (Node v n) = n
     nxt (DelNode n) = n
     nxt (Head n) = n
 @-}
+
 {-@ measure isHead :: List a -> Bool
     isHead (Head n) = true
 @-}
@@ -128,108 +130,107 @@ data List a = Node a (UNPACK(RGRef (List a)))
 {-@ measure isNull :: List a -> Bool
     isNull (Null) = true
 @-}
--- -- A cleaner to show the SMT these predicates are disjoint may be to redefine them as predicates on
--- -- another measure mapping nodes to some ListTypeEnum...
--- {-@ assume isDelOnly :: x:List a -> 
---                         {v:Bool | ((isDel x) <=> ((not (isHead x)) && (not (isNull x)) && (not (isNode x))))} @-}
--- isDelOnly :: List a -> Bool
--- isDelOnly x = undefined
--- 
--- -- we assume a static head pointer, pointing to the first node which must be Head
--- -- the deleted field of Head is always False, it's only there to make some of the code
--- -- more uniform
--- -- tail points to the last node which must be Null
--- 
--- 
--- {-@ type Iterator a = IORef (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)) @-}
--- type Iterator a = IORef (RGRef (List a))
--- 
--- 
--- -------------------------------------------
--- -- auxilliary functions
--- 
--- 
--- 
--- while b cmd = if b then do {cmd; while b cmd}
---               else return ()
--- 
--- repeatUntil cmd = do { b <- cmd; if b then return ()
---                                   else repeatUntil cmd }
--- 
--- atomCAS :: Eq a => IORef a -> a -> a -> IO Bool
--- atomCAS ptr old new =
---    atomicModifyIORef ptr (\ cur -> if cur == old
---                                    then (new, True)
---                                    else (cur, False))
--- 
--- atomicWrite :: IORef a -> a -> IO ()
--- atomicWrite ptr x =
---    atomicModifyIORef ptr (\ _ -> (x,()))
--- 
--- 
--- ----------------------------------------------
--- -- functions operating on lists
--- 
--- {-@ dummyRef :: (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)) @-}
--- dummyRef :: (RGRef (List a))
--- dummyRef = undefined
--- 
--- {-@ allocNull :: IO (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)) @-}
--- allocNull :: IO (RGRef (List a))
--- allocNull = 
---    let memo_null = Null in
---    newRGRef memo_null
--- 
--- -- we create a new list
--- newList :: IO (ListHandle a)
--- newList = 
---    --do null <- newRGRef memo_null memo_null any_stable_listrg
---    do null <- allocNull
---       let memo_hd = Head null 
---       hd <- newRGRef memo_hd
---       hdPtr <- newIORef hd
---       tailPtr <- newIORef null
---       return (ListHandle hdPtr tailPtr)
--- 
--- 
--- -- we add a new node, by overwriting the null tail node
--- -- we only need to adjust tailList but not headList because
--- -- of the static Head
--- -- we return the location of the newly added node
--- addToTail :: Eq a => ListHandle a -> a -> IO ()
--- addToTail (ListHandle _ tailPtrPtr) x =
---    --do null <- let nm = Null in newRGRef nm nm any_stable_listrg
---    do null <- allocNull
---       repeatUntil 
---          (do tailPtr <- readIORef tailPtrPtr
---              b <- rgCAS tailPtr Null (Node x null) --any_stable_listrg
---              return b )
---         -- we atomically update the tail
---         -- (by spinning on the tailPtr)
---       atomicWrite tailPtrPtr null
--- 
--- -- Wrap rgCAS with the refinements made concrete, to help inference
--- {-@ rgListCAS :: Eq a =>
---                  RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a) ->
---                  old:(List a) ->
---                  new:{v:(List a) | (ListRG old v)} ->
---                  IO Bool
--- @-}
--- rgListCAS :: Eq a => RGRef (List a) -> List a -> List a -> IO Bool
--- rgListCAS r old new = rgCAS r old new --any_stable_listrg
--- 
--- -- I exported pastValue via qualif, but simply defining this fixes qualifier inference....
--- {-@ readPastValue :: x:InteriorPtr a -> IO ({v:(List a) | (pastValue x v)}) @-}
--- readPastValue :: RGRef (List a) -> IO (List a)
--- readPastValue x = readRGRef2 x
--- 
--- 
--- {-@ terminal_listrg :: rf:InteriorPtr a -> v:{v:List a | (isDel v)}->
---                        x:{x:List a | (x = v)} ->y:{y:List a | (ListRG x y)} -> {z:List a | ((x = z) && (z = y))} @-}
--- terminal_listrg :: RGRef (List a) -> List a -> List a -> List a -> List a
--- terminal_listrg rf v x y = liquidAssume (isDelOnly x) y
--- 
--- 
+-- A cleaner to show the SMT these predicates are disjoint may be to redefine them as predicates on
+-- another measure mapping nodes to some ListTypeEnum...
+{-@ assume isDelOnly :: x:List a -> 
+                        {v:Bool | ((isDel x) <=> ((not (isHead x)) && (not (isNull x)) && (not (isNode x))))} @-}
+isDelOnly :: List a -> Bool
+isDelOnly x = undefined
+
+-- we assume a static head pointer, pointing to the first node which must be Head
+-- the deleted field of Head is always False, it's only there to make some of the code
+-- more uniform
+-- tail points to the last node which must be Null
+
+
+{-@ type Iterator a = IORef (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)) @-}
+type Iterator a = IORef (RGRef (List a))
+
+
+-------------------------------------------
+-- auxilliary functions
+
+
+
+while b cmd = if b then do {cmd; while b cmd}
+              else return ()
+
+repeatUntil cmd = do { b <- cmd; if b then return ()
+                                  else repeatUntil cmd }
+
+atomCAS :: Eq a => IORef a -> a -> a -> IO Bool
+atomCAS ptr old new =
+   atomicModifyIORef ptr (\ cur -> if cur == old
+                                   then (new, True)
+                                   else (cur, False))
+
+atomicWrite :: IORef a -> a -> IO ()
+atomicWrite ptr x =
+   atomicModifyIORef ptr (\ _ -> (x,()))
+
+
+----------------------------------------------
+-- functions operating on lists
+
+{-@ dummyRef :: (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)) @-}
+dummyRef :: (RGRef (List a))
+dummyRef = undefined
+
+{-@ allocNull :: IO (RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a)) @-}
+allocNull :: IO (RGRef (List a))
+allocNull = 
+   let memo_null = Null in
+   newRGRef memo_null
+
+-- we create a new list
+newList :: IO (ListHandle a)
+newList = 
+   --do null <- newRGRef memo_null memo_null any_stable_listrg
+   do null <- allocNull
+      let memo_hd = Head null 
+      hd <- newRGRef memo_hd
+      hdPtr <- newIORef hd
+      tailPtr <- newIORef null
+      return (ListHandle hdPtr tailPtr)
+
+
+-- we add a new node, by overwriting the null tail node
+-- we only need to adjust tailList but not headList because
+-- of the static Head
+-- we return the location of the newly added node
+addToTail :: Eq a => ListHandle a -> a -> IO ()
+addToTail (ListHandle _ tailPtrPtr) x =
+   --do null <- let nm = Null in newRGRef nm nm any_stable_listrg
+   do null <- allocNull
+      repeatUntil 
+         (do tailPtr <- readIORef tailPtrPtr
+             b <- rgCAS tailPtr Null (Node x null) --any_stable_listrg
+             return b )
+        -- we atomically update the tail
+        -- (by spinning on the tailPtr)
+      atomicWrite tailPtrPtr null
+
+-- Wrap rgCAS with the refinements made concrete, to help inference
+{-@ rgListCAS :: Eq a =>
+                 RGRef<{\x -> (1 > 0)},{\x y -> (ListRG x y)},{\x y -> (ListRG x y)}> (List a) ->
+                 old:(List a) ->
+                 new:{v:(List a) | (ListRG old v)} ->
+                 IO Bool
+@-}
+rgListCAS :: Eq a => RGRef (List a) -> List a -> List a -> IO Bool
+rgListCAS r old new = rgCAS r old new --any_stable_listrg
+
+-- I exported pastValue via qualif, but simply defining this fixes qualifier inference....
+{-@ readPastValue :: x:InteriorPtr a -> IO ({v:(List a) | (pastValue x v)}) @-}
+readPastValue :: RGRef (List a) -> IO (List a)
+readPastValue x = readRGRef2 x
+
+{-@ terminal_listrg :: rf:InteriorPtr a -> v:{v:List a | (isDel v)}->
+                       x:{x:List a | (x = v)} ->y:{y:List a | (ListRG x y)} -> {z:List a | ((x = z) && (z = y))} @-}
+terminal_listrg :: RGRef (List a) -> List a -> List a -> List a -> List a
+terminal_listrg rf v x y = liquidAssume (isDelOnly x) y
+
+
 -- find :: Eq a => ListHandle a -> a -> IO Bool
 -- find (ListHandle head _) x =
 --   do startPtr <- readIORef head

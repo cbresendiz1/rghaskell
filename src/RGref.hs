@@ -100,7 +100,7 @@ injectStable2 pf ref v = liquidAssume undefined ref
 --                 { x::b |- b <: a }
 --                 { x::b |- b<r x> <: b<p> }
 --                 ref:RGRef<p,r,g> a ->
---                 { v:b | pastValue ref v } ->
+  --                 { v:b | pastValue ref v } ->
 --                 { r : RGRef<p,r,g> b | ref == r } @-}
 {-@ assume downcast :: forall <p :: b -> Bool, r :: b -> b -> Bool, g :: b -> b -> Bool>. 
                    { x :: b |- b <: a }
@@ -190,13 +190,13 @@ rgCASpublish :: Eq a => b -> RGRef a -> a -> (RGRef b -> a) -> IO Bool
 rgCASpublish e (Wrap ptr) old new =
    do pub <- newRGRef e
       atomicModifyIORef' ptr (\ cur -> if cur == old
-                                      then (new (liquidAssume (coerce pub e) pub), True)
+                                      then (new (liquidAssume (coerceb pub e) pub), True)
                                       else (cur, False))
-           where
-           {-@ assume coerce :: forall <pb :: b -> Bool, rb :: b -> b -> Bool, gb :: b -> b -> Bool>.
-                         r:RGRef<pb,rb,gb> b -> e:b -> {x:Bool | shareValue r = e} @-}
-           coerce :: RGRef b -> b -> Bool
-           coerce r e = undefined
+
+{-@ assume coerceb :: forall <pb :: b -> Bool, rb :: b -> b -> Bool, gb :: b -> b -> Bool>.
+              r:RGRef<pb,rb,gb> b -> e:b -> {x:Bool | shareValue r = e} @-}
+coerceb :: RGRef b -> b -> Bool
+coerceb r e = undefined
 
 -- {-@ assume safe_covar :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>.
 --                  { x::a |- a <: b }
