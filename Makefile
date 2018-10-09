@@ -1,2 +1,2 @@
 run :
-	stack exec -- liquid src/CASList.hs src/RGref.hs
+	stack exec -- liquid src/CASList.hs src/RG.hs
