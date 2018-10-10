@@ -1,3 +1,0 @@
-[submodule "liquidhaskell"]
-	path = liquidhaskell
-	url = git@github.com:ucsd-progsys/liquidhaskell.git

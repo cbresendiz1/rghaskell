@@ -32,8 +32,58 @@ and being a refinement of a language with real programs!  The main simplificatio
    dereference) doesn't exist in this system, mostly because all predicates and
    relations can restrict only one cell.
 
+Build Instructions (New)
+-----------------------
 
-Dependencies
+Starting off create a directory that will hold rghaskell and liquidhaskell directory
+
+```bash
+  mkdir rghaskell-repo
+  cd rghaskell-repo
+```
+
+Next, git clone liquidhaskell, then configure liquidhaskell and liquidfixpoint to the current version
+
+```bash
+  cd rghaskell-repo
+  git clone --recursive https://github.com/ucsd-progsys/liquidhaskell.git
+  cd liquidhaskell
+  git checkout b78152f170bb19f0ddb6e72bfa1e5b3343e5de3c
+  cd liquid-fixpoint
+  git checkout 1708c2633c2cf8336a6d79b874564291dc7b3885
+```
+
+Next, build liquid-fixpoint and liquidhaskell
+
+```bash
+  cd rghaskell-repo/liquidhaskell/liquid-fixpoint
+  stack build
+  cd ../
+  stack build
+```
+
+Just in case, run (not necessary)
+```bash
+  stack install
+```
+
+Finally, build rghaskell
+
+```bash
+  cd rghaskell-repo
+  git clone --recursive https://github.com/cbresendiz1/rghaskell.git -b rghaskell-stack
+  cd rghaskell
+  stack build
+```
+
+To Run LH verification
+----------------------
+```bash
+  cd rghaskell-repo/rghaskell
+  make
+```
+
+Old Dependencies
 ------------
 At some point there was some history rewriting in the liquid-fixpoint and liquidhaskell
 repositories; it looks like the old external dependencies that had been checked in (OCaml
