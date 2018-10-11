@@ -2,11 +2,11 @@ resolver: lts-10.0
 
 packages:
 - .
-- ./liquidhaskell/
-- ./liquidhaskell/liquid-fixpoint/
+- ../liquidhaskell/
+- ../liquidhaskell/liquid-fixpoint/
 #- location:
 #    git: https://github.com/ucsd-progsys/liquidhaskell.git
-#    commit: b5981f2f55f1139b1f58629ec354d0d89567504b
+#    commit: e93288731fd1d04db2ad11f641d7f1742d4a050c
 #  extra-dep: true
 #- location:
 #    git: https://github.com/ucsd-progsys/liquid-fixpoint.git
