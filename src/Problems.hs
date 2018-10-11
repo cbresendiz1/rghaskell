@@ -7,7 +7,7 @@ import Control.Concurrent.Chan
 import System.Environment
 import Data.Time
 
-import RGref
+import RG
 import Language.Haskell.Liquid.Prelude
 
 

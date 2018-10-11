@@ -1,6 +1,6 @@
 module RGTests where
 
-import RGref
+import RG
 import Data.IORef
 import GHC.Base
 import Language.Haskell.Liquid.Prelude
