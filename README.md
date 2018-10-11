@@ -35,7 +35,37 @@ and being a refinement of a language with real programs!  The main simplificatio
 Build Instructions (New)
 -----------------------
 
+Starting off create a directory that will hold rghaskell and liquidhaskell directory
+
 ```bash
+  mkdir rghaskell-repo
+  cd rghaskell-repo
+```
+
+Next, git clone liquidhaskell, then configure liquidhaskell and liquidfixpoint to the current version
+
+```bash
+  cd rghaskell-repo
+  git clone --recursive https://github.com/ucsd-progsys/liquidhaskell.git
+  cd liquidhaskell
+  git checkout b78152f170bb19f0ddb6e72bfa1e5b3343e5de3c
+  cd liquid-fixpoint
+  git checkout 1708c2633c2cf8336a6d79b874564291dc7b3885
+```
+
+Next, build liquid-fixpoint and liquidhaskell
+
+```bash
+  cd rghaskell-repo/liquidhaskell/liquid-fixpoint
+  stack build
+  cd ../
+  stack build
+```
+
+Finally, build rghaskell
+
+```bash
+  cd rghaskell-repo
   git clone --recursive https://github.com/cbresendiz1/rghaskell.git -b rghaskell-stack
   cd rghaskell
   stack build
@@ -44,7 +74,7 @@ Build Instructions (New)
 To Run LH verification
 ----------------------
 ```bash
-  cd rghaskell
+  cd rghaskell-repo/rghaskell
   make
 ```
 
