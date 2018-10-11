@@ -36,21 +36,15 @@ Build Instructions (New)
 -----------------------
 
 ```bash
-  mkdir rghaskell-repo
-  cd rghaskell-repo
-  git clone https://github.com/cbresendiz1/rghaskell.git
-  git clone --recursive https://github.com/ucsd-progsys/liquidhaskell.git
-  cd liquidhaskell
-  stack build
-  cd ../rghaskell
-  git checkout rghaskell-stack
+  git clone --recursive https://github.com/cbresendiz1/rghaskell.git -b rghaskell-stack
+  cd rghaskell
   stack build
 ```
 
 To Run LH verification
 ----------------------
 ```bash
-  cd rghaskell-repo/rghaskell
+  cd rghaskell
   make
 ```
 

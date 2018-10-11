@@ -2,13 +2,12 @@ name:                rghaskell
 version:             0.2.0.0
 github:              "cbresendiz1/rghaskell"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2018 Author name here"
+author:              ""
+maintainer:          ""
+copyright:           ""
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
