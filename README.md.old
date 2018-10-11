@@ -53,7 +53,21 @@ Next, git clone liquidhaskell, then configure liquidhaskell and liquidfixpoint t
   git checkout 1708c2633c2cf8336a6d79b874564291dc7b3885
 ```
 
-Finally, clone and build rghaskell
+Next, build liquid-fixpoint and liquidhaskell
+
+```bash
+  cd rghaskell-repo/liquidhaskell/liquid-fixpoint
+  stack build
+  cd ../
+  stack build
+```
+
+Just in case, run (not necessary)
+```bash
+  stack install
+```
+
+Finally, build rghaskell
 
 ```bash
   cd rghaskell-repo
