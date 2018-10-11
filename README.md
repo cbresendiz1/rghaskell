@@ -62,6 +62,11 @@ Next, build liquid-fixpoint and liquidhaskell
   stack build
 ```
 
+Just in case, run (not necessary)
+```bash
+  stack install
+```
+
 Finally, build rghaskell
 
 ```bash
