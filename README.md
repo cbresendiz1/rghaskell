@@ -53,8 +53,6 @@ Next, git clone liquidhaskell, then configure liquidhaskell and liquidfixpoint t
   git checkout 1708c2633c2cf8336a6d79b874564291dc7b3885
 ```
 
-Finally, clone and build rghaskell
-
 ```bash
   cd rghaskell-repo
   git clone --recursive https://github.com/cbresendiz1/rghaskell.git -b rghaskell-stack

@@ -3,10 +3,8 @@ default :
 	@echo "Please read the README and Makefile"
 	@echo "+ List of (make) commands :"
 	@echo "  [ build verify-rgref verify-cas]"
-
 build :
 	stack build
-
 verify-rgref :
 	stack exec -- liquid src/rgref/pos/*.hs
 verify-cas :
