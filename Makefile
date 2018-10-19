@@ -1,10 +1,13 @@
+.PHONY : default build verify-rgref verify-cas
 default :
 	@echo "Please read the README and Makefile"
+	@echo "+ List of (make) commands :"
+	@echo "  [ build verify-rgref verify-cas]"
 
 build :
 	stack build
 
-verify_all :
-	stack exec -- liquid src/RG.hs src/CASList.hs src/RefinedADTs.hs src/MinCrash.hs src/BadMeasureParse.hs src/Ackermann.hs
-verify_CAS :
-	stack exec -- liquid src/CASList.hs src/RG.hs
+verify-rgref :
+	stack exec -- liquid src/rgref/pos/*.hs
+verify-cas :
+	stack exec -- liquid src/rgref/pos/CASList.hs src/rgref/pos/RG.hs
