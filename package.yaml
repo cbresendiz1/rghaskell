@@ -22,7 +22,10 @@ dependencies:
 - base >= 4.7 && < 5
 
 library:
-  source-dirs: src
+  source-dirs:
+  - src/rgref/pos
+  - src/rgref/absref
+  - src/other
   dependencies:
   - liquidhaskell
   - time

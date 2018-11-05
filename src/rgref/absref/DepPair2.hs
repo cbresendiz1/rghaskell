@@ -1,4 +1,4 @@
-module Niki () where
+module DepPair2 where
 
 import Language.Haskell.Liquid.Prelude
 
@@ -12,7 +12,7 @@ baz x = (x, incr x)
 
 {-@ goo :: Int -> (Int, Int, Int)<{\x v -> x < v}, {\x y v -> true}> @-}
 goo x = (x, y, z)
-  where 
+  where
     y = incr x
     z = incr y
 

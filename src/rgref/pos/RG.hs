@@ -7,7 +7,7 @@ import Unsafe.Coerce
 
 {-@ data RGRef a < p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>
          = Wrap (rgref_ref :: R.IORef a <p>)
-@-}
+  @-}
 
 data RGRef a = Wrap (R.IORef a)
   deriving Eq

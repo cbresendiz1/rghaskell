@@ -1,4 +1,4 @@
-module Niki () where
+module DepTup0 where
 
 import Language.Haskell.Liquid.Prelude
 
@@ -14,4 +14,3 @@ prop = chk $ baz n
   where n = choose 100
 
 chk (P x y) = liquidAssertB (x < y)
-

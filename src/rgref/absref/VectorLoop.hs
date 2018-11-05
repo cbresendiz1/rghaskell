@@ -1,5 +1,5 @@
--- this tests that we EXPAND aliases INSIDE the predicate-applications, 
--- This tests we do alias-expansion inside predicate applications, e.g. Vec <{v:Nat | v < n}, p> 
+-- this tests that we EXPAND aliases INSIDE the predicate-applications,
+-- This tests we do alias-expansion inside predicate applications, e.g. Vec <{v:Nat | v < n}, p>
 -- as in the signatures below.
 
 module VectorLoop where
@@ -22,8 +22,8 @@ empty     = V $ \_ -> error "empty vector!"
            key: Int<d> -> val: a<r key>
         -> vec: Vec<{v:Int<d>| v /= key},r> a
         -> Vec <d, r> a                     @-}
-set key val (V f) = V $ \k -> if k == key 
-                                then val 
+set key val (V f) = V $ \k -> if k == key
+                                then val
                                 else f k
 
 {- loop :: forall a <p :: Int -> a -> Bool>.

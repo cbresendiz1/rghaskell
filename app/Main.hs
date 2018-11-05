@@ -1,6 +1,7 @@
 module Main where
 
-import Lib
+import RG
+import DepTup0 (chk)
 
 main :: IO ()
-main = someFunc
+main = undefined

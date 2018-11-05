@@ -1,4 +1,4 @@
-module StateMonad () where
+module State00 where
 
 data ST s = S { act :: s -> s } 
 
@@ -7,4 +7,3 @@ data ST s = S { act :: s -> s }
 {-@ foo :: forall <q :: sip -> Bool>. ST <q> sip @-}
 foo :: ST s
 foo = S (\s -> s)
-

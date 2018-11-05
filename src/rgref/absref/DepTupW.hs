@@ -1,4 +1,4 @@
-module Deptup0 () where
+module DepTupW where
 
 import Language.Haskell.Liquid.Prelude
 
@@ -8,4 +8,4 @@ data Pair a b = P a b
 -- Names are shifty. I bet this would not work with alpha-renaming.
 {-@ mkP :: forall a <poo :: xx0:a -> xx1:a -> Bool>. zx: a -> zy: a<poo zx> -> Pair <poo> a a @-}
 mkP :: a -> a -> Pair a a
-mkP x y = undefined 
+mkP x y = undefined
