@@ -6,8 +6,6 @@ default :
 build :
 	stack build
 verify-rgref :
-	stack exec -- liquid src/rgref/pos/*.hs
+	stack exec -- liquid src/RGRef/RG.hs
 verify-cas :
-	stack exec -- liquid src/rgref/pos/CASList.hs src/rgref/pos/RG.hs
-verify-problem : # should fail
-	stack exec -- liquid src/rgref/*.hs
+	stack exec -- liquid src/RGRef/CASList.hs src/RGRef/RG.hs
