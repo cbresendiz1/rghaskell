@@ -6,7 +6,7 @@
 -- Disable termination checking; this is lock-free, not wait-free
 {-@ LIQUID "--no-termination" @-}
 -- {-@ LIQUID "--no-totality" @-}
-module CASList where
+module RGRef.CASList where
 
 import Control.Monad
 import Data.IORef
@@ -15,7 +15,7 @@ import Control.Concurrent.Chan
 import System.Environment
 import Data.Time
 
-import RG
+import RGRef.RG
 import Language.Haskell.Liquid.Prelude
 
 -- #define USE_UNPACK

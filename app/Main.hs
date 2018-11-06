@@ -1,7 +1,7 @@
 module Main where
 
-import RG
-import DepTup0 (chk)
+import RGRef.RG
+import RGRef.CASList
 
 main :: IO ()
 main = undefined

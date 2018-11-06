@@ -1,4 +1,4 @@
-module RG where
+module RGRef.RG where
 
 import Language.Haskell.Liquid.Prelude
 import Data.IORef as R
@@ -80,14 +80,14 @@ injectStable2 pf ref v = liquidAssume undefined ref
 --                 { x::b |- b <: a }
 --                 { x::b |- b<r x> <: b<p> }
 --                 ref:RGRef<p,r,g> a ->
-  --                 { v:b | pastValue ref v } ->
+--                 { v:b | pastValue ref v } ->
 --                 { r : RGRef<p,r,g> b | ref == r } @-}
-{-@ assume downcast :: forall <p :: b -> Bool, r :: b -> b -> Bool, g :: b -> b -> Bool>. 
+{-@ assume downcast :: forall <p :: b -> Bool, r :: b -> b -> Bool, g :: b -> b -> Bool>.
                    { x :: b |- b <: a }
                    { x :: b |- b<r x> <: b<p> }
-                   ref : RGRef a -> 
-                   { v : b | pastValueb ref v } -> 
-                   { r : RGRef<p,r,g> b | (translate ref) == r } 
+                   ref : RGRef a ->
+                   { v : b | pastValueb ref v } ->
+                   { r : RGRef<p,r,g> b | (translate ref) == r }
   @-}
 downcast :: RGRef a -> b -> RGRef b
 downcast r v = (unsafeCoerce r)

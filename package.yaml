@@ -23,9 +23,7 @@ dependencies:
 
 library:
   source-dirs:
-  - src/rgref/pos
-  - src/rgref/absref
-  - src/other
+  - src/
   dependencies:
   - liquidhaskell
   - time
