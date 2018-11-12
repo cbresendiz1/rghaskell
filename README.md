@@ -32,6 +32,15 @@ and being a refinement of a language with real programs!  The main simplificatio
    dereference) doesn't exist in this system, mostly because all predicates and
    relations can restrict only one cell.
 
+Testing Instructions and Rational (New)
+---------------------------------------
+
+``` bash
+  make test
+```
+
+With the rghaskell repository, a test suite is included to check available features imported from various versions of liquidhaskell. Since each new version might use a different GHC version or break compatibility with rghaskell, the test suite is meant to reduce the pain points of updating and adjusting the source code and configuration.
+
 Build Instructions (New)
 -----------------------
 
