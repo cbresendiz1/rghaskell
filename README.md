@@ -32,7 +32,7 @@ and being a refinement of a language with real programs!  The main simplificatio
    dereference) doesn't exist in this system, mostly because all predicates and
    relations can restrict only one cell.
 
-Testing Instructions and Rational (New)
+Testing Instructions and Rationale (New)
 ---------------------------------------
 
 ``` bash

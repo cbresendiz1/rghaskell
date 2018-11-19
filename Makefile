@@ -2,7 +2,7 @@
 default:
 	@echo "Please read the README and Makefile"
 	@echo "+ List of (make) commands :"
-	@echo "  [ build verify-rgref verify-cas verify-rgtest test ]"
+	@echo "  [ build verify-rgref verify-cas verify-rgtest verify-all test ]"
 build:
 	stack build
 test:
@@ -13,3 +13,5 @@ verify-cas:
 	stack exec -- liquid src/RGRef/CASList.hs src/RGRef/RG.hs
 verify-rgtest:
 	stack exec -- liquid src/RGRef/RG.hs src/RGRef/RGTests.hs
+verify-all:
+	stack exec -- liquid src/RGRef/RG.hs src/RGRef/RGTests.hs src/RGRef/CASList.hs

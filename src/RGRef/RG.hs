@@ -1,3 +1,4 @@
+-- {-@ LIQUID"--reflection" @-}
 module RGRef.RG where
 
 import Language.Haskell.Liquid.Prelude
@@ -17,13 +18,6 @@ data RGRef a = Wrap (R.IORef a)
 @-}
 forgetIOTriple :: IO a -> IO a
 forgetIOTriple a = a
-
-{-@ measure getfst :: (a, b) -> a
-    getfst (x, y) = x
-  @-}
-{-@ measure getsnd :: (a, b) -> b
-    getsnd (x, y) = y
-  @-}
 
 {-@ newRGRef :: forall < p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool >.
                        { x :: a<p> |- a<r x> <: a<p> }
@@ -102,7 +96,7 @@ readRGRef (Wrap x) = readIORef x
 readRGRef2 (Wrap x) = readIORef x
 
 -- Again, would be nice to tie to pointsTo
-{-@ assume writeRGRef :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>. 
+{-@ assume writeRGRef :: forall <p :: a -> Bool, r :: a -> a -> Bool, g :: a -> a -> Bool>.
                           x:(RGRef<p,r,g> a) -> 
                           old:a -> 
                           new:a<r old> -> 
@@ -143,7 +137,7 @@ atomicModifyRGRef (Wrap x) f = atomicModifyIORef' x (\ v -> ((f v),()))
              Eq a =>
              RGRef<p,r,g> a -> old:a<p> -> new:a<g old> ->
              IO Bool
-@-}
+  @-}
 rgCAS :: Eq a => RGRef a -> a -> a -> IO Bool
 rgCAS (Wrap ptr) old new =
    atomicModifyIORef' ptr (\ cur -> if cur == old
@@ -164,8 +158,8 @@ rgCASpublish :: Eq a => b -> RGRef a -> a -> (RGRef b -> a) -> IO Bool
 rgCASpublish e (Wrap ptr) old new =
    do pub <- newRGRef e
       atomicModifyIORef' ptr (\ cur -> if cur == old
-                                      then (new (liquidAssume (coerceb pub e) pub), True)
-                                      else (cur, False))
+                                       then (new (liquidAssume (coerceb pub e) pub), True)
+                                       else (cur, False))
 
 {-@ assume coerceb :: forall <pb :: b -> Bool, rb :: b -> b -> Bool, gb :: b -> b -> Bool>.
               r:RGRef<pb,rb,gb> b -> e:b -> {x:Bool | shareValue r = e} @-}

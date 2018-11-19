@@ -206,6 +206,7 @@ macroTests = group "Macro"
    [ testGroup "unit-pos"       <$> dirTests "tests/pos"                            posIgnored        ExitSuccess
    , testGroup "unit-deppair"   <$> dirTests "tests/deppair"                        []                ExitSuccess
    , testGroup "unit-list"      <$> dirTests "tests/list"                           []                ExitSuccess
+   , testGroup "unit-thmprover"      <$> dirTests "tests/thmprover"                           []                ExitSuccess
 --   , testGroup "unit-other"   <$> dirTests "tests/other"                            []                ExitSuccess
 --    , testGroup "unit-neg"       <$> dirTests "tests/neg"                            negIgnored        (ExitFailure 1)
    ] 
